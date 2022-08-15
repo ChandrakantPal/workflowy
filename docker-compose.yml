@@ -1,0 +1,38 @@
+version: "3.8"
+services:
+  mongo_db:
+    image: mongo:latest
+    container_name: db_container
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+
+  server:
+    build: ./server
+    container_name: server_c
+    ports:
+      - '4000:4000'
+    volumes:
+      - ./server:/app
+      - ./app/node_modules
+    environment:
+      PORT: 4000
+      MONGODB_URI: mongodb://mongo_db:27017
+      SECRET_KEY: SHOLAYxGOTxHP
+      DB_NAME: workflowyDB
+    depends_on:
+      - mongo_db
+
+  client:
+    build: ./client
+    container_name: client_c
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./client:/app
+      - ./app/node_modules
+    stdin_open: true
+    tty: true
+
+volumes:
+  mongo_db: {}
