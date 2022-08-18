@@ -5,14 +5,14 @@ const mongoose = require("mongoose")
 const typeDefs = require("./graphql/typeDefs")
 const resolvers = require("./graphql/resolvers")
 
-const pubsub = new PubSub()
+// const pubsub = new PubSub()
 
 const PORT = process.env.PORT || 4000
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
-  context: ({ req }) => ({ req, pubsub }),
+  context: ({ req }) => ({ req }),
 })
 
 const DB_url = `${process.env.MONGODB_URI}/${process.env.DB_NAME}`
