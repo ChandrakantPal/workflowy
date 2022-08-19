@@ -1,7 +1,7 @@
-const { AuthenticationError, UserInputError } = require('apollo-server')
+const { AuthenticationError, UserInputError } = require("apollo-server")
 
-const Task = require('../../models/Task')
-const checkAuth = require('../../utils/checkAuth')
+const Task = require("../../models/Task")
+const checkAuth = require("../../utils/checkAuth")
 
 module.exports = {
   Query: {
@@ -34,7 +34,7 @@ module.exports = {
         if (task) {
           return { task, subTasks }
         } else {
-          throw new Error('Task not found')
+          throw new Error("Task not found")
         }
       } catch (error) {
         throw new Error(error)
@@ -53,7 +53,7 @@ module.exports = {
         if (subTasks) {
           return subTasks
         } else {
-          throw new Error('Task not found')
+          throw new Error("Task not found")
         }
       } catch (error) {
         throw new Error(error)
@@ -65,8 +65,8 @@ module.exports = {
       const user = checkAuth(context)
       // console.log(user);
       try {
-        if (body.trim() === '') {
-          throw new Error('Task body must not be empty')
+        if (body.trim() === "") {
+          throw new Error("Task body must not be empty")
         }
         const newTask = new Task({
           body,
@@ -80,9 +80,9 @@ module.exports = {
 
         const task = await newTask.save()
 
-        context.pubsub.publish('NEW_TASK', {
-          newTask: task,
-        })
+        // context.pubsub.publish("NEW_TASK", {
+        //   newTask: task,
+        // })
 
         return task
       } catch (error) {
@@ -92,10 +92,10 @@ module.exports = {
     createSubTask: async (_, { taskId, body }, context) => {
       const { username, id } = checkAuth(context)
       try {
-        if (body.trim() === '') {
-          throw new UserInputError('Empty comment', {
+        if (body.trim() === "") {
+          throw new UserInputError("Empty comment", {
             errors: {
-              body: 'Comment body must not be empty',
+              body: "Comment body must not be empty",
             },
           })
         }
@@ -109,9 +109,9 @@ module.exports = {
           subTasks: [],
         })
         const subTask = await newSubTask.save()
-        context.pubsub.publish('NEW_TASK', {
-          newTask: subTask,
-        })
+        // context.pubsub.publish("NEW_TASK", {
+        //   newTask: subTask,
+        // })
         const task = await Task.findById(taskId)
 
         if (task) {
@@ -123,7 +123,7 @@ module.exports = {
           await task.save()
           return task
         } else {
-          throw new UserInputError('Post not founnd')
+          throw new UserInputError("Post not founnd")
         }
       } catch (error) {
         throw new Error(error)
@@ -147,9 +147,9 @@ module.exports = {
         if (user.username === task.username) {
           deleteSubTask(task)
           await task.delete()
-          return 'Task deleted Sucessfully'
+          return "Task deleted Sucessfully"
         } else {
-          throw new AuthenticationError('Action not allowed')
+          throw new AuthenticationError("Action not allowed")
         }
       } catch (error) {
         throw new Error(error)
@@ -169,14 +169,14 @@ module.exports = {
         await task.save()
         return task
       } else {
-        throw new UserInputError('Post not founnd')
+        throw new UserInputError("Post not founnd")
       }
     },
     async editTask(_, { taskId, body }, context) {
       checkAuth(context)
       try {
-        if (body.trim() === '') {
-          throw new Error('Task body must not be empty')
+        if (body.trim() === "") {
+          throw new Error("Task body must not be empty")
         }
         const task = await Task.findById(taskId)
         if (task) {
@@ -184,16 +184,16 @@ module.exports = {
           await task.save()
           return task
         } else {
-          throw new UserInputError('Post not founnd')
+          throw new UserInputError("Post not founnd")
         }
       } catch (error) {
         throw new Error(error)
       }
     },
   },
-  Subscription: {
-    newTask: {
-      subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_TASK'),
-    },
-  },
+  // Subscription: {
+  //   newTask: {
+  //     subscribe: (_, __, { pubsub }) => pubsub.asyncIterator('NEW_TASK'),
+  //   },
+  // },
 }
